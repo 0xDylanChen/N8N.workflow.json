@@ -1,0 +1,172 @@
+{
+  "name": "SI-OS Intel Daily Collection DATA Summarizer and sent to my Gamil (Gemini Edition)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 21
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -544,
+        48
+      ],
+      "id": "19500920-56bd-4e6c-afd1-c8802e02a2b8",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 368,
+        "width": 1056,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -672,
+        -80
+      ],
+      "typeVersion": 1,
+      "id": "fc3960d9-44d4-4589-a24b-b7053be76187",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "sendTo": "luck667986@gmail.com",
+        "subject": "= [SI-OS] Daily Intel Report - {{ $now.toFormat('yyyy-MM-dd') }}",
+        "message": "={{ $json.candidates[0].content.parts[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        112,
+        48
+      ],
+      "id": "1dbbc7a5-8d43-48a8-a544-4241e11b68d3",
+      "name": "Send a message",
+      "webhookId": "440c994d-6342-47cf-bfb0-e97c49048d04",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "LYtczUxePlkQZwEy",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-flash-lite-latest",
+          "mode": "list",
+          "cachedResultName": "models/gemini-flash-lite-latest"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=資料來源：  {{ JSON.stringify($json.news_results) }} "
+            }
+          ]
+        },
+        "simplify": false,
+        "options": {
+          "systemMessage": "=# Role\n你是專精於「宏觀經濟」、「加密資產」與「AI 科技」的首席情報官。你的任務是從搜尋結果中，篩選出今日熱度最高的關鍵情報，並輸出為 HTML 格式。\n\n# Input Data\n{{ JSON.stringify($json.news_results) }}\n\n# Strict Filtering Rules (邏輯核心)\n1. **領域鎖定**：僅保留以下三類新聞，其餘雜訊（如娛樂、體育、地方犯罪）一律剔除：\n   - 🌏 宏觀經濟 (Fed, 通膨, 利率, 地緣政治)\n   - ⚖️ 虛擬貨幣 (Bitcoin, ETF, SEC 監管, DeFi)\n   - 🤖 AI 科技 (LLM, OpenAI, Nvidia, 技術突破)\n2. **日期檢核**：嚴格檢查，僅收錄過去 24 小時內的新聞。\n3. **強制連結**：所有新聞標題必須包含 `<a href=\"...\">` 超連結。\n\n# Output Template (HTML Format)\n請直接輸出以下 HTML 原始碼，不要包含 ```html 標記，也不要包含 `<!DOCTYPE>` 或 `<html>` 標籤，只需 `<body>` 內的內容：\n\n<h1 style=\"color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;\">🚀 今日熱門情報 Top 10 | {{ $today }}</h1>\n\n<div style=\"background-color: #f8f9fa; padding: 15px; border-left: 5px solid #e74c3c; margin-bottom: 20px;\">\n    <h3 style=\"margin-top: 0; color: #c0392b;\">🎯 Executive Summary</h3>\n    <p style=\"font-size: 16px; line-height: 1.5;\">\n        (在此用 50 字內，整合今日三大領域中「影響最大」的一個趨勢或事件)\n    </p>\n</div>\n\n<h2 style=\"color: #2980b9;\">🦅 宏觀與政策 (Macro & Policy)</h2>\n<ul>\n    <li style=\"margin-bottom: 10px;\">\n        <a href=\"URL\" style=\"font-weight: bold; text-decoration: none; color: #2980b9; font-size: 16px;\">(新聞標題)</a>\n        <br>\n        <span style=\"color: #555;\">⚡️ <b>重點：</b>(一句話摘要核心變動)</span><br>\n        <span style=\"color: #7f8c8d; font-size: 12px;\">來源：媒體名稱</span>\n    </li>\n    </ul>\n\n<hr style=\"border: 0; border-top: 1px solid #eee; margin: 20px 0;\">\n\n<h2 style=\"color: #8e44ad;\">⚖️ 虛擬貨幣 (Crypto)</h2>\n<ul>\n    <li style=\"margin-bottom: 10px;\">\n        <a href=\"URL\" style=\"font-weight: bold; text-decoration: none; color: #8e44ad; font-size: 16px;\">(新聞標題)</a>\n        <br>\n        <span style=\"color: #555;\">⚡️ <b>重點：</b>(一句話摘要監管或幣價動態)</span><br>\n        <span style=\"color: #7f8c8d; font-size: 12px;\">來源：媒體名稱</span>\n    </li>\n</ul>\n\n<hr style=\"border: 0; border-top: 1px solid #eee; margin: 20px 0;\">\n\n<h2 style=\"color: #27ae60;\">🤖 人工智慧 (AI)</h2>\n<ul>\n    <li style=\"margin-bottom: 10px;\">\n        <a href=\"URL\" style=\"font-weight: bold; text-decoration: none; color: #27ae60; font-size: 16px;\">(新聞標題)</a>\n        <br>\n        <span style=\"color: #555;\">⚡️ <b>重點：</b>(一句話摘要技術突破)</span><br>\n        <span style=\"color: #7f8c8d; font-size: 12px;\">來源：媒體名稱</span>\n    </li>\n</ul>\n\n<p style=\"text-align: center; color: #95a5a6; font-size: 12px; margin-top: 30px;\">\n    Generated by AI Intelligence Bot • Data filtered for relevance\n</p>"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        48
+      ],
+      "id": "b4d2214b-96cb-41f1-9e57-7bdea3480fde",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NJO3DcCArorjgFHw",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "google_news",
+        "q": "financial",
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-serpapi.serpApi",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        48
+      ],
+      "id": "5f3994d2-90e0-4710-8e09-c9aa7b0b2608",
+      "name": "Google_news search",
+      "credentials": {
+        "serpApi": {
+          "id": "R80vhdv1kd3i6UHP",
+          "name": "SerpAPI account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google_news search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google_news search": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e90c4e41-04b3-452b-9652-47aa0b0cce7d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "505fd1f4dfbf97ac0d819e428f980db4337800383d4ca72b598adb3efccf438b"
+  },
+  "id": "HFIGgc78MrCy6KMm",
+  "tags": []
+}
