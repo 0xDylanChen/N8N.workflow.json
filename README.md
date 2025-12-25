@@ -12,9 +12,9 @@ This workflow acts as a backend service for a Chrome extension (or any webhook c
 #### Workflow Diagram
 ```mermaid
 graph LR
-    A[Webhook<br/>(Receive Image)] -->|POST| B[Google Gemini<br/>(Vision Analysis)]
-    B -->|Trading Plan| C[Discord<br/>(Notify Channel)]
-    C --> D[Respond to Webhook<br/>(Return Analysis)]
+    A["Webhook<br/>(Receive Image)"] -->|POST| B["Google Gemini<br/>(Vision Analysis)"]
+    B -->|"Trading Plan"| C["Discord<br/>(Notify Channel)"]
+    C --> D["Respond to Webhook<br/>(Return Analysis)"]
     
     style A fill:#ff6d5a,stroke:#333,stroke-width:2px,color:white
     style B fill:#88aaff,stroke:#333,stroke-width:2px,color:white
@@ -39,9 +39,9 @@ A daily scheduled automation that acts as a personal "Chief Intelligence Officer
 #### Workflow Diagram
 ```mermaid
 graph LR
-    A[Schedule Trigger<br/>(Daily 21:00)] --> B[SerpApi<br/>(Google News Search)]
-    B -->|News JSON| C[Google Gemini<br/>(Filter & Summarize)]
-    C -->|HTML Report| D[Gmail<br/>(Send Email)]
+    A["Schedule Trigger<br/>(Daily 21:00)"] --> B["SerpApi<br/>(Google News Search)"]
+    B -->|"News JSON"| C["Google Gemini<br/>(Filter & Summarize)"]
+    C -->|"HTML Report"| D["Gmail<br/>(Send Email)"]
 
     style A fill:#22bb33,stroke:#333,stroke-width:2px,color:white
     style B fill:#ffbd2e,stroke:#333,stroke-width:2px,color:black
