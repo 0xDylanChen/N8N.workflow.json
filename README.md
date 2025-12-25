@@ -9,25 +9,55 @@ This repository contains exported workflows for **n8n**, focusing on AI-powered 
 
 This workflow acts as a backend service for a Chrome extension (or any webhook client) to analyze financial charts using computer vision and advanced prompt engineering.
 
+#### Workflow Diagram
+```mermaid
+graph LR
+    A[Webhook<br/>(Receive Image)] -->|POST| B[Google Gemini<br/>(Vision Analysis)]
+    B -->|Trading Plan| C[Discord<br/>(Notify Channel)]
+    C --> D[Respond to Webhook<br/>(Return Analysis)]
+    
+    style A fill:#ff6d5a,stroke:#333,stroke-width:2px,color:white
+    style B fill:#88aaff,stroke:#333,stroke-width:2px,color:white
+    style C fill:#5865F2,stroke:#333,stroke-width:2px,color:white
+    style D fill:#22bb33,stroke:#333,stroke-width:2px,color:white
+```
+
+#### Details
 *   **Trigger:** Webhook (`POST`) receiving an image/screenshot.
 *   **AI Logic:** Uses **Google Gemini** (Vision capabilities) with a "Hedge Fund CIO" persona. It performs a "Quantamental" analysis combining technical analysis (market structure, order flow) with a "Red Team" stress test to provide a balanced trading plan.
 *   **Output:**
     *   Sends a structured analysis (Direction, Entry, Stop Loss, Take Profit, Reasoning) to a **Discord** channel.
     *   Returns the analysis text to the webhook caller.
-*   **Key Nodes:** Webhook, Google Gemini (Chat Model), Discord, Respond to Webhook.
+
+---
 
 ### 2. SI-OS Intel Daily Collection (Daily News Summarizer)
 **File:** `SI-OS Intel Daily Collection DATA Summarizer and sent to my Gamil (Gemini Edition).json`
 
 A daily scheduled automation that acts as a personal "Chief Intelligence Officer," scraping financial news and generating a high-quality HTML summary email.
 
+#### Workflow Diagram
+```mermaid
+graph LR
+    A[Schedule Trigger<br/>(Daily 21:00)] --> B[SerpApi<br/>(Google News Search)]
+    B -->|News JSON| C[Google Gemini<br/>(Filter & Summarize)]
+    C -->|HTML Report| D[Gmail<br/>(Send Email)]
+
+    style A fill:#22bb33,stroke:#333,stroke-width:2px,color:white
+    style B fill:#ffbd2e,stroke:#333,stroke-width:2px,color:black
+    style C fill:#88aaff,stroke:#333,stroke-width:2px,color:white
+    style D fill:#ea4335,stroke:#333,stroke-width:2px,color:white
+```
+
+#### Details
 *   **Trigger:** Scheduled Timer (Daily at 21:00).
 *   **Process:**
     1.  **Search:** Uses **SerpApi** to fetch the latest Google News results for "financial" topics.
     2.  **Filter & Summarize:** Uses **Google Gemini** to process the raw search results. It filters specifically for **Macro Economics**, **Crypto**, and **AI Tech**, ensuring news is within the last 24 hours.
     3.  **Format:** Generates a clean, styled HTML report with an executive summary and categorized links.
 *   **Output:** Sends the HTML report via **Gmail**.
-*   **Key Nodes:** Schedule Trigger, SerpApi, Google Gemini (Chat Model), Gmail.
+
+---
 
 ## Setup & Usage
 
