@@ -1,0 +1,679 @@
+{
+  "name": "Project_Crypto_ChainLinkNews_boardcast",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -256,
+        -496
+      ],
+      "id": "bebcbde5-cd82-45ee-b40c-4f79ce3d28e6",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "google_news",
+        "q": "chainlink",
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-serpapi.serpApi",
+      "typeVersion": 1,
+      "position": [
+        64,
+        -336
+      ],
+      "id": "7f961223-210f-42a3-ae9e-d6ed52c82ba1",
+      "name": "Google_news search",
+      "credentials": {
+        "serpApi": {
+          "id": "R80vhdv1kd3i6UHP",
+          "name": "SerpAPI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3-flash-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3-flash-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=# Task\n分析 JSON 數據，篩選「過去 7 天內 (Weekly)」具備最高機構價值的 Top 10 新聞，並渲染至「週度戰略儀表板」。\n\n# Selection Logic (本週嚴格執行)\n1. 時效過濾：僅處理日期在 {{ $now.minus({ days: 7 }).toFormat('yyyy-MM-dd') }} 至 {{ $now.toFormat('yyyy-MM-dd') }} 之間的新聞。\n2. 語義去重：若多條新聞描述同一事件，僅保留細節最全、來源最權威的一則。\n\n# Critical Instructions (必須遵守)\n1. **連結填充**: 從 JSON 的 `url` 或 `link` 提取完整網址填入 `href`。嚴禁保留 `[URL]`。\n2. **佈局控制 (CRITICAL)**: \n   - 針對 Top 4-10，**必須** 使用 `display: inline-block` 佈局。\n   - 確保每個卡片代碼塊是獨立的，且直接放置在 Main Template 的對應位置。\n3. **總結深度**: 120-150 字深度分析。\n\n# HTML Component for Top 3 (重點標註)\n<div style=\"background: linear-gradient(135deg, #1C1E26 0%, #2A3B80 200%); padding: 25px; border-radius: 12px; border: 1px solid #375BD2; margin-bottom: 20px; position: relative; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);\">\n    <div style=\"display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;\">\n        <span style=\"background: #FF4B4B; color: #FFFFFF; font-size: 10px; padding: 4px 8px; border-radius: 4px; font-weight: 800; letter-spacing: 0.5px;\">WEEKLY MAJOR</span>\n        <span style=\"font-size: 11px; color: #9CA3AF; font-family: monospace;\">[Date]</span>\n    </div>\n    <a href=\"[URL]\" target=\"_blank\" style=\"text-decoration: none;\">\n        <div style=\"font-size: 20px; font-weight: 700; color: #FFFFFF; margin-bottom: 10px; line-height: 1.4;\">[標題]</div>\n    </a>\n    <div style=\"font-size: 14px; color: #D1D5DB; line-height: 1.6;\">[本週關鍵進展摘要：限 50 字]</div>\n</div>\n\n# HTML Component for Top 4-10 (次要項目 - 3欄穩固版)\n<div style=\"display: inline-block; vertical-align: top; width: 31%; margin-right: 1.5%; margin-bottom: 20px; background: #13161C; padding: 18px; border-radius: 12px; border: 1px solid #2D3748; box-sizing: border-box; min-height: 160px; overflow: hidden; text-align: left;\">\n    <div style=\"margin-bottom: 12px;\">\n        <a href=\"[URL]\" target=\"_blank\" style=\"text-decoration: none; color: #FFFFFF; font-weight: 600; font-size: 14px; display: block; margin-bottom: 8px; line-height: 1.5; word-wrap: break-word;\">[標題]</a>\n        <div style=\"font-size: 12px; color: #9CA3AF; line-height: 1.5;\">[一句話短評]</div>\n    </div>\n    <div style=\"font-size: 9px; color: #52525B; border-top: 1px solid #2D3748; padding-top: 8px; margin-top: 10px;\">[Date] | [Source]</div>\n</div>\n\n# Main HTML Template\n<div style=\"font-family: 'Inter', sans-serif; background-color: #0A0E17; padding: 40px; color: #E5E7EB; border-radius: 16px; width: 1000px; max-width: 1000px; margin: auto; border: 1px solid #1C1E26; text-align: left;\">\n    \n    <!-- Header -->\n    <div style=\"display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #375BD2; padding-bottom: 20px;\">\n        <div>\n            <div style=\"font-size: 26px; font-weight: 800; color: #375BD2; letter-spacing: 1.5px;\">LINK<span style=\"color: #FFFFFF;\">INTEL</span></div>\n            <div style=\"font-size: 11px; color: #86868B; text-transform: uppercase; margin-top: 6px;\">Institutional Weekly Intelligence</div>\n        </div>\n        <div style=\"text-align: right;\">\n            <div style=\"font-size: 14px; color: #FFFFFF; font-weight: 600;\">{{ $now.setZone('Asia/Taipei').toFormat('yyyy.MM.dd') }} 週報</div>\n            <div style=\"font-size: 11px; color: #375BD2;\">UTC+8 | INSTITUTIONAL GRADE</div>\n        </div>\n    </div>\n\n    <!-- Synthesis -->\n    <div style=\"background: #1C1E26; padding: 25px; border-radius: 12px; border-left: 5px solid #375BD2; margin-bottom: 30px;\">\n        <div style=\"color: #375BD2; font-size: 12px; font-weight: bold; margin-bottom: 10px; text-transform: uppercase;\">● Weekly Strategic Synthesis</div>\n        <p style=\"font-size: 15px; line-height: 1.8; margin: 0; color: #FFFFFF;\">[REPLACE: 120-150字深度總結]</p>\n    </div>\n\n    <!-- Top 1-3 -->\n    <div style=\"margin-bottom: 10px;\">\n        [REPLACE_WITH_TOP_3_HERO_ITEMS]\n    </div>\n\n    <!-- Top 4-10 (Grid Area) -->\n    <div style=\"width: 100%; text-align: left; font-size: 0;\">\n        [REPLACE_WITH_REMAINING_7_ITEMS]\n    </div>\n\n    <!-- Footer -->\n    <div style=\"margin-top: 35px; padding-top: 20px; border-top: 1px solid #1C1E26; display: flex; justify-content: space-between; align-items: center;\">\n        <div style=\"font-size: 10px; color: #374151;\">WEEKLY_ID: {{ $execution.id }} | ACCESS RESTRICTED</div>\n        <div style=\"font-size: 10px; color: #86868B; font-weight: bold;\">© 2025 LINKINTEL RESEARCH</div>\n    </div>\n</div>\n\n# Input Data\n{{ JSON.stringify($json.news_results) }}\n\n# Formatting Note\n禁止輸出 Markdown 代碼塊。確保所有 HTML 標籤正確閉合。網址務必填寫正確。"
+            }
+          ]
+        },
+        "options": {
+          "systemMessage": "=## Role\nYou are the Lead Institutional Strategist at a tier-1 digital asset research firm. Your expertise lies in the Chainlink ecosystem, RWA tokenization, and TradFi integration.\n\n## Mission\nExtract and prioritize high-signal intelligence from raw news JSON data. You must filter out retail noise and focus exclusively on institutional-grade developments.\n\n## Filtering Logic & Priority (Strict Enforcement)\n1. Tier 0 (ETF & Policy): Regulatory approvals, ETF filings/progress, Sovereign government or Central Bank adoptions.\n2. Tier 1 (TradFi Infrastructure): Strategic integrations with Swift, DTCC, BNY Mellon, and other global financial infrastructure providers.\n3. Tier 2 (CCIP & Standard): CCIP-based cross-chain settlement pilots and RWA deployments by major financial institutions.\n4. EXCLUDE: Price speculation, technical analysis, social media hype, minor website updates, or marketing-heavy fluff.\n\n## Analytical Tone\n- Objective, professional, and concise. \n- Use financial terminology (e.g., \"Interoperability,\" \"Settlement Finality,\" \"Liquidity Hub\").\n- Zero emotional language. No speculative adjectives (e.g., \"huge,\" \"massive,\" \"bullish\").\n\n## Output Constraints\n- Structural Loyalty: Strictly follow the HTML component schema provided in the Message Prompt.\n- Data Fidelity: You must extract exact URLs from the JSON source (checking both 'url' and 'link' fields) and map them to the href attributes. Never invent URLs.\n- Integrity: Ensure all HTML tags are correctly closed. Do not include markdown code blocks.\n\n## Language\n- Output Language: Traditional Chinese (Taiwan) for content, but keep technical terms (like CCIP, RWA, ETF) in English."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        -336
+      ],
+      "id": "f015152d-6535-43d5-a23c-28b228478a82",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NJO3DcCArorjgFHw",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "=items",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        -768
+      ],
+      "id": "f20f60f6-52d9-4bcc-9254-a9c9aab5e4f3",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        864,
+        -768
+      ],
+      "id": "1ffd2f13-6ade-49f9-85a4-c181056aed2f",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3-flash-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3-flash-preview"
+        },
+        "text": "# Role\n資深區塊鏈技術分析師。\n\n# Task\n對提供的 Chainlink 官方影片進行深度技術解構。\n\n# Analysis Focus (關鍵指標)\n1. **技術新發現 (Technical Delta)**: 影片中提到的「新功能」或「架構變更」。\n2. **性能指標 (Metrics)**: 提到的 TPS、延遲、節點數量或集成數量。\n3. **戰略地位 (Strategic Positioning)**: 該更新如何解決現有的技術痛點 (如：跨鏈流動性碎裂)。\n\n# Output Structure (Obsidian Syntax)\n## ## [影片標題] | 技術核心總結\n- **核心模組**: (如: CCIP v1.5, ZK-proving)\n- **關鍵技術點**: \n  - **細節 A**: **[關鍵術語]** + 具體實現方式。\n  - **細節 B**: **[變更點]** + 對系統的影響。\n\n## ## 技術對比表格\n| 項目 | 現狀 (Current) | 更新 (New) | 影響評估 (Impact) |\n| :--- | :--- | :--- | :--- |\n| [模組名] | [技術描述] | [變更描述] | [高/中/低] |\n\n## ## 驗證與追蹤\n- **GitHub/文件**: 指向具體 PR 或 Doc 章節的關鍵字。\n- **鏈上觀察點**: 需要關注的 Contract Address 或 Parameter。",
+        "videoUrls": "={{ $json.link }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        -624
+      ],
+      "id": "986267ec-ce31-48ef-a59d-42d224969975",
+      "name": "Analyze video1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NJO3DcCArorjgFHw",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3-flash-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3-flash-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=# Role\n你是一位專精於技術通訊的系統架構師，負責將複雜的技術數據轉化為高品質、適配 Gmail 的 HTML 郵件。\n\n# Task\n根據以下 Markdown 數據，生成一段「內聯樣式 (Inline CSS)」的 HTML 郵件代碼：\n---\n{{ $json.items[0].content.parts[0].text }}\n---\n\n# Design Requirements (Strict)\n1. **Style**: 使用深色主題 (背景 #0f172a, 文字 #f8fafc)。\n2. **Accent**: 關鍵標籤與邊框使用 Chainlink 藍 (#375bd2)。\n3. **Responsive**: 寬度 600px，適配手機。\n4. **Structure**:\n   - **Header**: 標題「Chainlink Technical Intelligence」。\n   - **BLUF Section**: 使用高對比度區塊強調結論。\n   - **Architecture Table**: 將表格轉化為簡潔的 HTML Table，並帶有斑馬紋。\n   - **Inversion Analysis**: 使用深紅色 (#991b1b) 左邊框強調風險警告。\n   - **Verifiable Output**: 按鈕式鏈接設計。\n\n# Constraints\n- 僅輸出 <html> 到 </html> 的代碼。\n- 禁止使用外部 JS，所有 CSS 必須在 <style> 中或內聯。\n- 去掉開頭的 ```html "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        -768
+      ],
+      "id": "c4651241-836a-49f4-99b4-8f71c8146b63",
+      "name": "Message a model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NJO3DcCArorjgFHw",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "luck667986@gmail.com",
+        "subject": "[Intelligence] 2025-12-27",
+        "message": "={{ $json.content.parts[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1472,
+        -768
+      ],
+      "id": "cecc5550-cbc9-491c-9301-e95ad9da3531",
+      "name": "Send a message",
+      "webhookId": "73cf0e3d-f329-4a26-ae5a-5b20b4d0bd5b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QsJBzmORAOe9kghh",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "youtube",
+        "search_query": "chainlink",
+        "additionalFields": {
+          "sp": "CAMSBAABGAE%3D"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-serpapi.serpApi",
+      "typeVersion": 1,
+      "position": [
+        16,
+        -640
+      ],
+      "id": "b21edac8-364d-46c3-9391-d426ff3c6dfa",
+      "name": "Search ChainLink latest Video",
+      "credentials": {
+        "serpApi": {
+          "id": "R80vhdv1kd3i6UHP",
+          "name": "SerpAPI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "latest_from_chainlink",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        192,
+        -640
+      ],
+      "id": "7b2e38de-690a-4056-83c6-f452b257eb7a",
+      "name": "Split Video Links"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "26a0f320-41f1-4b6e-a7f2-35fea35a602e",
+              "leftValue": "={{ $json.channel.name }}",
+              "rightValue": "Chainlink",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "6a50a9ab-aa79-4b42-935c-55595b0f0f9c",
+              "leftValue": "={{ $json.published_date.includes('hour') ? 0 : ($json.published_date.includes('day') ? parseInt($json.published_date) : 99) }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        368,
+        -640
+      ],
+      "id": "015537fb-021b-4c6e-baa8-b3c0a75a29cd",
+      "name": "Only today Video"
+    },
+    {
+      "parameters": {
+        "sendTo": "luck667986@gmail.com",
+        "subject": "[Intelligence] ",
+        "message": "={{ $json.content.parts[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1344,
+        -336
+      ],
+      "id": "2e4cafc2-020d-40ae-935b-8635d0eaf708",
+      "name": "Send a message1",
+      "webhookId": "73cf0e3d-f329-4a26-ae5a-5b20b4d0bd5b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "QsJBzmORAOe9kghh",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "846329eb-75da-4fe5-a793-a3fa5e4980ec",
+              "leftValue": "={{ $json.title }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        528,
+        -640
+      ],
+      "id": "bdc21db7-5bb8-4798-bd7e-1852723e552d",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e1d293b0-199b-4c0a-af50-a9afab050aad",
+              "leftValue": "={{ $json.formattedDate }}",
+              "rightValue": "={{ $now.minus({ days: 7 }) }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        528,
+        -336
+      ],
+      "id": "493a7ca7-21e0-4268-a712-e2c7ac2e7608",
+      "name": "Only today Video1"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "=items",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        880,
+        -336
+      ],
+      "id": "4d61b25b-29b0-4b57-99f2-303271e99374",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $json.date }}",
+        "format": "yyyy-MM-dd",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        368,
+        -336
+      ],
+      "id": "91fd0c9c-5f84-4976-9bc3-566ce2a4c717",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e455349a-8581-4789-ba90-899c51bc2aa3",
+              "name": "title",
+              "value": "={{ $('Google_news search').item.json.news_results[0].title }}",
+              "type": "string"
+            },
+            {
+              "id": "47c951a7-2ac4-4ccf-8f83-f39c87d90df4",
+              "name": "url",
+              "value": "={{ $('Google_news search').item.json.news_results[0].link }}",
+              "type": "string"
+            },
+            {
+              "id": "d40d8ea9-c756-4c22-b764-87a30d872e4d",
+              "name": "source",
+              "value": "news_results[0].source",
+              "type": "string"
+            },
+            {
+              "id": "7f73c51a-df50-4f91-9740-cdcba4b0c6d8",
+              "name": "authors",
+              "value": "={{ $('Google_news search').item.json.news_results[0].source.authors }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        704,
+        -336
+      ],
+      "id": "2decb1dc-5d23-4d0b-8885-62a7a44155b9",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "news_results",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        208,
+        -336
+      ],
+      "id": "735ca8ce-db9e-4dc8-be3d-e95f35a15cee",
+      "name": "Split Video Links1"
+    },
+    {
+      "parameters": {
+        "content": "Video anayist",
+        "height": 496,
+        "width": 2080,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -48,
+        -928
+      ],
+      "typeVersion": 1,
+      "id": "6eb7c251-a03e-4fdf-a557-dc419929466c",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Weekly Repot",
+        "height": 288,
+        "width": 2064,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -48,
+        -400
+      ],
+      "typeVersion": 1,
+      "id": "e916cb96-caf7-4636-bbd4-198ef915ffea",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google_news search",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Search ChainLink latest Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google_news search": {
+      "main": [
+        [
+          {
+            "node": "Split Video Links1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Analyze video1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze video1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search ChainLink latest Video": {
+      "main": [
+        [
+          {
+            "node": "Split Video Links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Video Links": {
+      "main": [
+        [
+          {
+            "node": "Only today Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Only today Video": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Only today Video1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Only today Video1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Video Links1": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9f662458-9418-4d4e-b08a-3364d5cf7d31",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "505fd1f4dfbf97ac0d819e428f980db4337800383d4ca72b598adb3efccf438b"
+  },
+  "id": "ug8culPRBrvucSvK",
+  "tags": []
+}
