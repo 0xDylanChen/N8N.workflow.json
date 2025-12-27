@@ -59,6 +59,46 @@ graph LR
 
 ---
 
+### 3. Project Crypto ChainLink News Broadcast
+**File:** `Project_Crypto_ChainLinkNews_boardcast.json`
+
+A sophisticated dual-track intelligence workflow that monitors the Chainlink ecosystem, combining news aggregation with deep technical video analysis.
+
+#### Workflow Diagram
+```mermaid
+graph TD
+    A["Schedule Trigger"] --> B1["SerpApi<br/>(Google News)"]
+    A --> B2["SerpApi<br/>(YouTube Search)"]
+    
+    B1 --> C1["Google Gemini<br/>(Institutional Filter)"]
+    C1 --> D1["Gmail<br/>(Weekly Dashboard)"]
+    
+    B2 --> C2["Google Gemini<br/>(Video Analysis)"]
+    C2 --> C3["Google Gemini<br/>(HTML Architect)"]
+    C3 --> D2["Gmail<br/>(Technical Intel)"]
+
+    style A fill:#22bb33,stroke:#333,stroke-width:2px,color:white
+    style B1 fill:#ffbd2e,stroke:#333,stroke-width:2px,color:black
+    style B2 fill:#ff0000,stroke:#333,stroke-width:2px,color:white
+    style C1 fill:#88aaff,stroke:#333,stroke-width:2px,color:white
+    style C2 fill:#88aaff,stroke:#333,stroke-width:2px,color:white
+    style C3 fill:#88aaff,stroke:#333,stroke-width:2px,color:white
+    style D1 fill:#ea4335,stroke:#333,stroke-width:2px,color:white
+    style D2 fill:#ea4335,stroke:#333,stroke-width:2px,color:white
+```
+
+#### Details
+*   **Trigger:** Scheduled periodic execution.
+*   **Dual-Track Intelligence:**
+    1.  **News Track:** Filters Google News for high-signal institutional developments (CCIP, RWA, ETF, Swift integrations) using **Google Gemini**.
+    2.  **Video Track:** Analyzes official **Chainlink YouTube** videos to extract technical deltas, performance metrics, and strategic positioning.
+*   **AI Logic:** Employs specialized personas (Lead Institutional Strategist and System Architect) to ensure professional, objective, and high-signal reporting.
+*   **Output:** Sends two types of reports via **Gmail**:
+    *   **Weekly Strategic Dashboard:** A curated list of the top 10 institutional-grade news items.
+    *   **Technical Intelligence:** In-depth deconstruction of the latest technical updates.
+
+---
+
 ## Setup & Usage
 
 1.  **Install n8n:** Ensure you have an n8n instance running (Cloud or Self-hosted).
